@@ -115,7 +115,8 @@ class ViewController: UIViewController, URLSessionDownloadDelegate {
         let operationQueue = OperationQueue()
         let urlSession = URLSession(configuration: confiruration, delegate: self, delegateQueue: operationQueue)
         guard let url = URL(string: urlString) else {
-            print("Error: can`t get URL from String")
+            let massege = "Can`t get URL from String \n Try agan?"
+            print(massege)
             return
         }
         let downloadTask =  urlSession.downloadTask(with: url)
@@ -164,6 +165,10 @@ extension ViewController: UITextFieldDelegate {
         animatingForFirstResponder()
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        animatingForResignFirstResponder()
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textfield.text == "" {
             animatingForResignFirstResponder()
@@ -189,23 +194,25 @@ extension ViewController: UITextFieldDelegate {
             self.textfield.text = ""
             self.percentegeLabel.textColor = UIColor.clear
             self.imageView.alpha = 0
-            self.textfield.transform = self.textfield.transform.translatedBy(x: 0, y: -(self.view.center.y))
+            self.textfield.transform = self.textfield.transform.translatedBy(x: 0, y: -self.view.center.y)
         })
     }
     
     fileprivate func animatingForResignFirstResponder() {
         self.shapeLayer.strokeColor = UIColor.red.cgColor
-        self.trackLayer.strokeColor = UIColor.gray.cgColor
-        self.textfield.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-        self.textfield.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        self.textfield.alpha = 0
         UIView.animate(withDuration: 0.7, delay: 0, options: .curveEaseOut, animations: {
             self.textfield.text = ""
             self.textfield.transform = .identity
             self.imageView.alpha = self.imageView.image != nil ? 1 : 0
         }) { (_) in
-            UIView.animate(withDuration: 0.4, animations: {
-                self.percentegeLabel.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            UIView.animate(withDuration: 0.7,  animations: {
+                self.textfield.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
                 self.textfield.text = "Push here for input data"
+                self.textfield.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+                self.textfield.alpha = 1
+                self.percentegeLabel.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                self.trackLayer.strokeColor = UIColor.gray.cgColor
             })
         }
     }

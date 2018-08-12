@@ -198,24 +198,24 @@ extension ViewController: UITextFieldDelegate {
 //        })
 //    }
     
-    fileprivate func animatingForResignFirstResponder() {
-        self.shapeLayer.strokeColor = UIColor.red.cgColor
-        self.textfield.alpha = 0
-        UIView.animate(withDuration: 0.7, delay: 0, options: .curveEaseOut, animations: {
-            self.textfield.text = ""
-            self.textfield.transform = .identity
-            self.imageView.alpha = self.imageView.image != nil ? 1 : 0
-        }) { (_) in
-            UIView.animate(withDuration: 0.7,  animations: {
-                self.textfield.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-                self.textfield.text = "Push here for input data"
-                self.textfield.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-                self.textfield.alpha = 1
-                self.percentegeLabel.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-                self.trackLayer.strokeColor = UIColor.gray.cgColor
-            })
-        }
-    }
+//    fileprivate func animatingForResignFirstResponder() {
+//        self.shapeLayer.strokeColor = UIColor.red.cgColor
+//        self.textfield.alpha = 0
+//        UIView.animate(withDuration: 0.7, delay: 0, options: .curveEaseOut, animations: {
+//            self.textfield.text = ""
+//            self.textfield.transform = .identity
+//            self.imageView.alpha = self.imageView.image != nil ? 1 : 0
+//        }) { (_) in
+//            UIView.animate(withDuration: 0.7,  animations: {
+//                self.textfield.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+//                self.textfield.text = "Push here for input data"
+//                self.textfield.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+//                self.textfield.alpha = 1
+//                self.percentegeLabel.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+//                self.trackLayer.strokeColor = UIColor.gray.cgColor
+//            })
+//        }
+//    }
 }
 
 

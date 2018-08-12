@@ -184,19 +184,19 @@ extension ViewController: UITextFieldDelegate {
         return true
     }
     
-    fileprivate func animatingForFirstResponder() {
-        self.shapeLayer.strokeColor = UIColor.clear.cgColor
-        self.trackLayer.strokeColor = UIColor.clear.cgColor
-        self.textfield.backgroundColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
-        self.textfield.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-        // animating for keyboard and input data
-        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: {
-            self.textfield.text = ""
-            self.percentegeLabel.textColor = UIColor.clear
-            self.imageView.alpha = 0
-            self.textfield.transform = self.textfield.transform.translatedBy(x: 0, y: -self.view.center.y)
-        })
-    }
+//    fileprivate func animatingForFirstResponder() {
+//        self.shapeLayer.strokeColor = UIColor.clear.cgColor
+//        self.trackLayer.strokeColor = UIColor.clear.cgColor
+//        self.textfield.backgroundColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
+//        self.textfield.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+//        // animating for keyboard and input data
+//        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: {
+//            self.textfield.text = ""
+//            self.percentegeLabel.textColor = UIColor.clear
+//            self.imageView.alpha = 0
+//            self.textfield.transform = self.textfield.transform.translatedBy(x: 0, y: -self.view.center.y)
+//        })
+//    }
     
     fileprivate func animatingForResignFirstResponder() {
         self.shapeLayer.strokeColor = UIColor.red.cgColor

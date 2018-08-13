@@ -105,6 +105,7 @@ class ViewController: UIViewController, URLSessionDownloadDelegate {
         }
     }
     
+    var flagURLText = true
     // create URLSession and get task
     fileprivate func beginDownloadingFile(from urlString: String) {
         print("begin downloading file")

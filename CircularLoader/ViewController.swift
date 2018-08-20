@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, URLSessionDownloadDelegate {
+class ViewController: UIViewController {
     
     var elements = Elements()
     
@@ -27,28 +27,70 @@ class ViewController: UIViewController, URLSessionDownloadDelegate {
     // calling to downloader
     @objc fileprivate func handlTap() {
         print("tap gesture")
-        actionAfterInputData()
+        if elements.textfield.isFirstResponder {
+            actionAfterInputData()
+        }
+    }
+    
+    // wen data in textField begin this action
+    fileprivate func actionAfterInputData() {
+        let textfield = elements.textfield
+        if textfield.text == "" {
+            AnimationCircle.forResignFirstResponder(with: elements)
+            textfield.resignFirstResponder()
+        } else if textfield.text != "" && textfield.text != nil {
+            let text = textfield.text!
+            AnimationCircle.forResignFirstResponder(with: elements)
+            textfield.resignFirstResponder()
+            guard let url = checkURL(from: text) else {
+                return
+            }
+            beginDownloadingFile(from: url)
+        }
+    }
+    
+    // checking the text for get URL
+    fileprivate func checkURL(from text: String) -> URL? {
+        guard let url = URL(string: text) else {
+            return nil
+        }
+        return url
     }
     
     // create URLSession and get task
-    fileprivate func beginDownloadingFile(from urlString: String) {
+    fileprivate func beginDownloadingFile(from url: URL) {
         print("begin downloading file")
-        elements.imageView.alpha = 0
-        elements.shapeLayer.strokeEnd = 0
-        elements.percentegeLabel.text = "0%"
+        AnimationCircle.forDownloadingFile(with: elements)
         let confiruration = URLSessionConfiguration.default
         let operationQueue = OperationQueue()
         let urlSession = URLSession(configuration: confiruration, delegate: self, delegateQueue: operationQueue)
-        guard let url = URL(string: urlString) else {
-            let massege = "Can`t get URL from String \n Try agan?"
-            print(massege)
-            return
-        }
         let downloadTask =  urlSession.downloadTask(with: url)
         downloadTask.resume()
     }
+}
+
+
+extension ViewController: URLSessionDownloadDelegate {
+    // finished download and adding image to imageView
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        print("Finished downloading file")
+        do {
+            let data = try Data.init(contentsOf: location)
+            guard let image = UIImage(data: data) else {
+                DispatchQueue.main.async {
+                 AnimationCircle.forCantGetImage(with: self.elements)
+                }
+                print("can`t get image")
+                return
+            }
+            DispatchQueue.main.async {
+                AnimationCircle.forGottenImage(with: self.elements, image: image)
+            }
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
     
-    // URLSessionDownloadDelegate
     // format bytes in percentage and extend strokeEnd to geting bytes
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         let percentage = CGFloat(totalBytesWritten) / CGFloat(totalBytesExpectedToWrite)
@@ -60,84 +102,28 @@ class ViewController: UIViewController, URLSessionDownloadDelegate {
         }
         print(percentage)
     }
-    
-    // finished download and adding image to imageView
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        print("Finished downloading file")
-        do {
-            let data = try Data.init(contentsOf: location)
-            guard let image = UIImage(data: data) else {
-                print("can`t get image")
-                return
-            }
-            DispatchQueue.main.async {
-                self.elements.imageView.alpha = 0
-                self.elements.imageView.image = image
-                UIView.animate(withDuration: 3, delay: 0, options: .curveEaseInOut, animations: {
-                    self.elements.imageView.alpha = 1
-                })
-            }
-        } catch let error {
-            print(error.localizedDescription)
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        guard error != nil else {
+            print("NOT errors")
+            return}
+        print("didCompleteWithError")
+        DispatchQueue.main.async {
+            AnimationCircle.forResignFirstResponder(with: self.elements)
         }
     }
 }
 
+
 extension ViewController: UITextFieldDelegate {
    
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        animatingForFirstResponder()
+        AnimationCircle.forFirstResponder(with: elements, view: self.view)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         actionAfterInputData()
         return true
-    }
-    
-    fileprivate func actionAfterInputData() {
-        let textfield = elements.textfield
-        if textfield.text == "" {
-            animatingForResignFirstResponder()
-            textfield.resignFirstResponder()
-            print("Animating For Resign First Responder")
-        } else if textfield.text != "" && textfield.text != nil {
-            let text = textfield.text!
-            animatingForResignFirstResponder()
-            textfield.resignFirstResponder()
-            beginDownloadingFile(from: text)
-            print("Animating For Resign First Responder and called to downloading file")
-        }
-    }
-    
-    fileprivate func animatingForFirstResponder() {
-        // animating for keyboard and input data
-        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: {
-            self.elements.shapeLayer.strokeColor = UIColor.clear.cgColor
-            self.elements.trackLayer.strokeColor = UIColor.clear.cgColor
-            self.elements.textfield.backgroundColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
-            self.elements.textfield.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-            self.elements.textfield.text = ""
-            self.elements.percentegeLabel.textColor = UIColor.clear
-            self.elements.imageView.alpha = 0
-            self.elements.textfield.transform = self.elements.textfield.transform.translatedBy(x: 0, y: -self.view.center.y)
-        })
-    }
-    
-    fileprivate func animatingForResignFirstResponder() {
-        UIView.animate(withDuration: 0.7, delay: 0, options: .curveEaseOut, animations: {
-            self.elements.textfield.text = ""
-            self.elements.textfield.transform = .identity
-            self.elements.imageView.alpha = self.elements.imageView.image != nil ? 1 : 0
-        }) { (_) in
-            UIView.animate(withDuration: 0.4,  animations: {
-                self.elements.textfield.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-                self.elements.textfield.text = "Push here for input data"
-                self.elements.textfield.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-                self.elements.shapeLayer.strokeColor = UIColor.red.cgColor
-                self.elements.percentegeLabel.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-                self.elements.trackLayer.strokeColor = UIColor.gray.cgColor
-            })
-        }
     }
 }
 
